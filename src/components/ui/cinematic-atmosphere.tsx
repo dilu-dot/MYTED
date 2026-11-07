@@ -1,3 +1,4 @@
+import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { useEffect,useRef,type RefObject } from 'react'
 import { smoothstep } from '@/lib/animation'
 import { sourceToScene } from '@/lib/scene-layout'
@@ -6,8 +7,8 @@ import { sourceToScene } from '@/lib/scene-layout'
 export function CinematicAtmosphere({progressRef,scrollingRef}:{progressRef:RefObject<number>;scrollingRef?:RefObject<boolean>}){
   const ref=useRef<HTMLCanvasElement>(null)
   useEffect(()=>{
-    const canvas=ref.current!,ctx=canvas.getContext('2d')!
-    const reduced=matchMedia('(prefers-reduced-motion: reduce)')
+    const canvas=ref.current!
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)'),ctx=canvas.getContext('2d')!
     let disposed=false,raf=0,last=0,phase=0,width=innerWidth,height=innerHeight,frames=0
     const opacity=()=>1-smoothstep(.78,.95,progressRef.current)
     const paint=()=>{
@@ -46,7 +47,7 @@ export function CinematicAtmosphere({progressRef,scrollingRef}:{progressRef:RefO
       canvas.dataset.frames=String(++frames)
     }
     const frame=(now:number)=>{
-      raf=0;if(disposed||document.hidden||reduced.matches||opacity()<=0)return
+      raf=0;if(disposed||document.hidden||motionReduced(reduced.matches)||opacity()<=0)return
       raf=requestAnimationFrame(frame)
       if(last&&now-last<1000/(scrollingRef?.current?24:30)-.5)return
       if(last)phase+=Math.min((now-last)/1000,.1)
@@ -55,7 +56,7 @@ export function CinematicAtmosphere({progressRef,scrollingRef}:{progressRef:RefO
     const sync=()=>{
       canvas.style.opacity=String(opacity())
       if(opacity()<=0||document.hidden){cancelAnimationFrame(raf);raf=0;last=0;ctx.clearRect(0,0,width,height);canvas.dataset.status='paused';return}
-      if(reduced.matches){cancelAnimationFrame(raf);raf=0;last=0;phase=0;paint();canvas.dataset.status='static';return}
+      if(motionReduced(reduced.matches)){cancelAnimationFrame(raf);raf=0;last=0;phase=0;paint();canvas.dataset.status='static';return}
       canvas.dataset.status='running';if(!raf)raf=requestAnimationFrame(frame)
     }
     const resize=()=>{
@@ -65,8 +66,8 @@ export function CinematicAtmosphere({progressRef,scrollingRef}:{progressRef:RefO
     }
     resize()
     window.addEventListener('resize',resize,{passive:true});window.addEventListener('teddy:progress',sync)
-    document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync)
-    return()=>{disposed=true;cancelAnimationFrame(raf);window.removeEventListener('resize',resize);window.removeEventListener('teddy:progress',sync);document.removeEventListener('visibilitychange',sync);reduced.removeEventListener('change',sync);ctx.clearRect(0,0,width,height)}
+    document.addEventListener('visibilitychange',sync);const unsubscribeMotion=subscribeMotion(sync)
+    return()=>{disposed=true;cancelAnimationFrame(raf);window.removeEventListener('resize',resize);window.removeEventListener('teddy:progress',sync);document.removeEventListener('visibilitychange',sync);unsubscribeMotion();ctx.clearRect(0,0,width,height)}
   },[progressRef,scrollingRef])
   return <canvas ref={ref} className="cinematic-atmosphere" data-testid="cinematic-atmosphere" aria-hidden="true"/>
 }

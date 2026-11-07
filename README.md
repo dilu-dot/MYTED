@@ -31,7 +31,7 @@ Production output is generated in `dist/`. Serve it over HTTP.
 - The official React Bits SplashCursor uses a rose/ivory palette. It pauses its GPU work during scrolling and resumes on subsequent mouse movement after scrolling settles.
 - Intro effects fade and clear before the fullscreen white ending. No heart or other mark remains there.
 
-The normal page respects reduced motion and touch-only devices. To explicitly review full motion while the device requests reduced motion, open `/tests/particle-preview.html` and click **Enable motion preview**. This development-only route does not ship in the production build or change system settings.
+The main site and motion preview share the same particle lettering and motion settings. Dotted words remain visible in reduced-motion and touch-only modes. If your browser requests reduced motion, use **Enable motion** beside **Skip intro** to opt into the vortex, flowing cursor, background and Teddy interaction. **Reduce motion** switches back to the still version. The choice is saved for future visits; touch-only devices still avoid cursor/rig GPU work. No operating-system setting is changed. The development review route `/tests/particle-preview.html` uses this same opt-in rather than overriding browser APIs.
 
 ## Smooth playback
 
@@ -41,7 +41,7 @@ All 192 lightweight playback bitmaps are prepared before the loading indicator c
 
 Canvas backing buffers are capped to avoid unnecessary retina/4K work. The atmosphere uses a smaller buffer and reduces its drawing rate during scrolling. Fluid mask geometry is measured on resize rather than every playhead update. The fluid simulation is suspended while the cinematic is moving, leaving rendering time for frame playback.
 
-Reduced-motion mode uses direct scrub, without fractional frame blending or camera motion, and static decorative content.
+Reduced-motion mode uses direct scrub, without fractional frame blending or camera motion, and static decorative content, including the same dotted lettering.
 
 ## Structure
 

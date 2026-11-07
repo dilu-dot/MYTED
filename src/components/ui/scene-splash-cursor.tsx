@@ -1,3 +1,4 @@
+import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { useEffect,useRef,useState,type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import SplashCursor from '@/components/ui/splash-cursor'
@@ -9,13 +10,14 @@ export function SceneSplashCursor({progressRef,interactionRef,scrollingRef}:Prop
   const overlayRef=useRef<HTMLDivElement>(null),firstMount=useRef(true)
   const [active,setActive]=useState(false),[intro,setIntro]=useState(true),[quality,setQuality]=useState<'high'|'medium'>('high')
   useEffect(()=>{
-    const fine=matchMedia('(any-hover: hover) and (any-pointer: fine)'),reduced=matchMedia('(prefers-reduced-motion: reduce)')
+    const fine=matchMedia('(any-hover: hover) and (any-pointer: fine)')
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)')
     const memory=(navigator as Navigator&{deviceMemory?:number}).deviceMemory??8
     setQuality((navigator.hardwareConcurrency||8)<=4||memory<=4?'medium':'high')
     let greeting:DOMRect|undefined,rect:DOMRect|undefined,lastMask=-1
     const sync=()=>{
       const overlay=overlayRef.current,gate=cursorOpacity(progressRef.current)
-      const enabled=fine.matches&&!reduced.matches&&!document.hidden&&gate>0
+      const enabled=fine.matches&&!motionReduced(reduced.matches)&&!document.hidden&&gate>0
       if(overlay){
         overlay.style.opacity=String(gate);overlay.dataset.active=String(enabled)
         const amount=Math.round(greetingOpacity(progressRef.current)*32)/32
@@ -36,8 +38,8 @@ export function SceneSplashCursor({progressRef,interactionRef,scrollingRef}:Prop
     }
     measure()
     window.addEventListener('teddy:progress',sync);window.addEventListener('resize',measure,{passive:true})
-    document.addEventListener('visibilitychange',sync);fine.addEventListener('change',sync);reduced.addEventListener('change',sync)
-    return()=>{window.removeEventListener('teddy:progress',sync);window.removeEventListener('resize',measure);document.removeEventListener('visibilitychange',sync);fine.removeEventListener('change',sync);reduced.removeEventListener('change',sync)}
+    document.addEventListener('visibilitychange',sync);fine.addEventListener('change',sync);const unsubscribeMotion=subscribeMotion(sync)
+    return()=>{window.removeEventListener('teddy:progress',sync);window.removeEventListener('resize',measure);document.removeEventListener('visibilitychange',sync);fine.removeEventListener('change',sync);unsubscribeMotion()}
   },[progressRef])
   return createPortal(<div ref={overlayRef} className="pointer-events-none fixed inset-0 z-20" data-testid="fluid-overlay" aria-hidden="true">
     {active&&<SplashCursor colors={COLORS} rainbow={false} size={2.05} force={1} swirl={3.5} trail={1.05} clickSplash colorSpeed={1} intensity={.75} momentum={1} shading={.65} glow={.1} quality={quality} intro={intro} contained={false} zIndex={0} adaptive blockedRef={interactionRef} pausedRef={scrollingRef}/>}

@@ -1,3 +1,4 @@
+import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { useEffect, useRef, type RefObject } from 'react'
 import { cn } from '@/lib/utils'
 import { clamp, greetingOpacity } from '@/lib/animation'
@@ -22,10 +23,10 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
   useEffect(() => {
     const container = containerRef.current!
     const canvas = canvasRef.current!
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)')
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) { container.classList.add('particle-unavailable'); return }
     const fine = matchMedia('(any-hover: hover) and (any-pointer: fine)')
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)')
     // x, y, originX, originY, velocityX, velocityY, colorIndex.
     let dots = new Float32Array(0)
     let width = 0, height = 0, radius = 100, dotRadius = .85
@@ -33,7 +34,7 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
     let mouseX = -1000, mouseY = -1000, pointerInside = false
     let raf = 0, previousTime = 0, disposed = false, visible = true
     const motionState = (state: string) => { if (canvas.dataset.motionState !== state) canvas.dataset.motionState = state }
-    const enabled = () => fine.matches && !reduced.matches && !document.hidden
+    const enabled = () => fine.matches && !motionReduced(reduced.matches) && !document.hidden
     const signalInteraction = (active: boolean) => {
       if (!interactionRef || interactionRef.current === active) return
       interactionRef.current = active
@@ -138,7 +139,8 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
       dots = new Float32Array(points)
       motionState('rest')
       canvas.dataset.particleCount = String(dots.length / 7)
-      if (enabled() && visible) paint()
+      canvas.dataset.motion = motionReduced(reduced.matches) || !fine.matches ? 'static' : 'full'
+      if (visible) paint()
       wake()
     }
     const updateVisibility = () => {
@@ -154,7 +156,7 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
       }
       const returning = !visible && nextVisible
       visible = nextVisible
-      if (returning) wake()
+      if (returning) { paint(); wake() }
       container.inert = !visible
       if (!visible) signalInteraction(false)
     }
@@ -167,7 +169,11 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
     }
     const leave = () => { pointerInside = false; signalInteraction(false); wake() }
     const preference = () => {
+      cancelAnimationFrame(raf); raf = 0; previousTime = 0
       leave(); reset(); ctx.clearRect(0, 0, width, height)
+      canvas.dataset.motion = motionReduced(reduced.matches) || !fine.matches ? 'static' : 'full'
+      motionState(visible ? 'rest' : 'hidden')
+      if (visible) paint()
       wake()
     }
     const resize = () => { leave(); build() }
@@ -189,7 +195,7 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
     window.addEventListener('teddy:progress', updateVisibility)
     document.addEventListener('visibilitychange', preference)
     fine.addEventListener('change', preference)
-    reduced.addEventListener('change', preference)
+    const unsubscribeMotion = subscribeMotion(preference)
     return () => {
       disposed = true; cancelAnimationFrame(raf); observer.disconnect()
       window.removeEventListener('pointermove', move)
@@ -199,7 +205,7 @@ export function ParticleTypography({ lines = DEFAULT_LINES, colors = DEFAULT_COL
       window.removeEventListener('teddy:progress', updateVisibility)
       document.removeEventListener('visibilitychange', preference)
       fine.removeEventListener('change', preference)
-      reduced.removeEventListener('change', preference)
+      unsubscribeMotion()
       dprQuery?.removeEventListener('change', dprChange)
       signalInteraction(false)
       dots = new Float32Array(0)

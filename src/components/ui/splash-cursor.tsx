@@ -1,4 +1,5 @@
 'use client';
+import { motionReduced } from '@/lib/motion';
 
 // React Bits SplashCursor-TS-TW, official registry, retrieved 2026-11-07.
 // https://reactbits.dev/r/SplashCursor-TS-TW.json
@@ -883,7 +884,7 @@ function SplashCursor({
 
     const pointers = new Map<string, Pointer>();
     const bursts: { x: number; y: number }[] = [];
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const reduced = motionReduced();
     const introPointer: Pointer = { x: 0, y: 0, px: 0, py: 0, ready: false, moved: false, offset: Math.random() };
     let introStart = introRef.current && !reduced && !pauseRef.current?.current ? performance.now() + 150 : -1;
     let raf = 0;

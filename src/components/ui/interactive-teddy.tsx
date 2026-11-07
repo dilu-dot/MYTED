@@ -1,3 +1,4 @@
+import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { useEffect,useRef,type RefObject } from 'react'
 import { createTeddyRig,dampLook,lookAt,REST,type Look } from '@/lib/teddy-rig'
 interface Props {progressRef:RefObject<number>;playheadRef?:RefObject<number>;handoffRef:RefObject<boolean>;renderSequenceRef:RefObject<()=>void>}
@@ -5,11 +6,12 @@ export function InteractiveTeddy({progressRef,playheadRef,handoffRef,renderSeque
  const canvasRef=useRef<HTMLCanvasElement>(null)
  useEffect(()=>{
   const canvas=canvasRef.current!
-  const fine=matchMedia('(any-hover: hover) and (any-pointer: fine)'),reduced=matchMedia('(prefers-reduced-motion: reduce)')
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)')
+  const fine=matchMedia('(any-hover: hover) and (any-pointer: fine)')
   const current:Look={...REST}
   let target:Look={...REST},renderer:ReturnType<typeof createTeddyRig>=null,image:HTMLImageElement|null=null
   let ready=false,disposed=false,raf=0,last=0,tracking=false,returning=false
-  const eligible=()=>fine.matches&&!reduced.matches&&!document.hidden
+  const eligible=()=>fine.matches&&!motionReduced(reduced.matches)&&!document.hidden
   const release=()=>{if(handoffRef.current){handoffRef.current=false;renderSequenceRef.current()}}
   const publish=()=>{
    canvas.dataset.yaw=String(current.yaw);canvas.dataset.pitch=String(current.pitch)
@@ -66,7 +68,7 @@ export function InteractiveTeddy({progressRef,playheadRef,handoffRef,renderSeque
   window.addEventListener('pointermove',move,{passive:true});window.addEventListener('blur',leave)
   document.documentElement.addEventListener('pointerleave',leave)
   window.addEventListener('resize',resize,{passive:true});window.addEventListener('teddy:scroll',sync)
-  document.addEventListener('visibilitychange',sync);fine.addEventListener('change',sync);reduced.addEventListener('change',sync)
+  document.addEventListener('visibilitychange',sync);fine.addEventListener('change',sync);const unsubscribeMotion=subscribeMotion(sync)
   canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored)
   sync()
   return()=>{
@@ -74,7 +76,7 @@ export function InteractiveTeddy({progressRef,playheadRef,handoffRef,renderSeque
    window.removeEventListener('pointermove',move);window.removeEventListener('blur',leave)
    document.documentElement.removeEventListener('pointerleave',leave)
    window.removeEventListener('resize',resize);window.removeEventListener('teddy:scroll',sync)
-   document.removeEventListener('visibilitychange',sync);fine.removeEventListener('change',sync);reduced.removeEventListener('change',sync)
+   document.removeEventListener('visibilitychange',sync);fine.removeEventListener('change',sync);unsubscribeMotion()
    canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);image=null
   }
  },[progressRef,playheadRef,handoffRef,renderSequenceRef])

@@ -37,3 +37,22 @@ test('touch-only mobile has no GPU cursor and can reverse the sequence', async (
   await expect(page.locator('.sequence')).toHaveAttribute('data-frame','0')
   await context.close()
 })
+
+
+test('production motion control preserves dots and an explicit opt-in after reload', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  await expect(page.locator('.loading')).toHaveCount(0)
+  const particles = page.locator('.particle-canvas')
+  await expect(particles).toBeVisible()
+  await expect(particles).toHaveAttribute('data-motion', 'static')
+  await page.locator('.motion-toggle').click()
+  await expect(particles).toHaveAttribute('data-motion', 'full')
+  await expect(page.locator('[data-testid="splash-canvas"]')).toHaveCount(1)
+  await page.reload()
+  await expect(page.locator('.motion-toggle')).toContainText('Reduce motion')
+  await expect(page.locator('[data-testid="splash-canvas"]')).toHaveCount(1)
+  await page.locator('.motion-toggle').click()
+  await expect(particles).toHaveAttribute('data-motion', 'static')
+  await expect(page.locator('[data-testid="splash-canvas"]')).toHaveCount(0)
+})

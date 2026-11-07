@@ -1,3 +1,4 @@
+import { setMotionPreference } from '../src/lib/motion'
 import { createRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 import { StrictMode } from 'react'
@@ -47,6 +48,8 @@ button.onclick = async () => {
   const errors: string[] = []
   const error = (event: ErrorEvent) => errors.push(event.message)
   window.addEventListener('error',error)
+  const previousMotion = localStorage.getItem('teddy-motion')
+  setMotionPreference('auto')
   const nativeMatch = window.matchMedia.bind(window)
   const media = (fine: boolean, reduced: boolean) => {
     document.documentElement.dataset.qaMotion = String(fine && !reduced)
@@ -254,6 +257,26 @@ button.onclick = async () => {
       media(true,true);mount(<><SceneSplashCursor progressRef={progress} interactionRef={blocked}/><InteractiveTeddy progressRef={progress} handoffRef={handoff} renderSequenceRef={render}/></>);await wait(100)
       assert(!canvas(),'Reduced motion allocates WebGL')
     })
+    await check('main-site motion switch enables the real particles and persists the choice',async()=>{
+      media(true,true);setMotionPreference('auto');mount(<App />)
+      await until(()=>!document.querySelector('.loading'),'Motion switch frames did not load')
+      const particles=document.querySelector<HTMLCanvasElement>('.particle-canvas')!
+      assert(getComputedStyle(particles).display!=='none','Reduced motion hides the dotted typography')
+      assert(particles.dataset.motion==='static','Reduced motion is not static by default')
+      assert(Number(particles.dataset.particleCount)>500,'Static dotted words missing')
+      const button=document.querySelector<HTMLButtonElement>('.motion-toggle')!
+      assert(button.textContent?.includes('Enable motion'),'No production motion opt-in')
+      button.click()
+      await until(()=>!!canvas()&&particles.dataset.motion==='full','Motion opt-in did not enable real effects')
+      assert(localStorage.getItem('teddy-motion')==='full','Explicit motion choice not saved')
+      const rect=particles.getBoundingClientRect()
+      pointer(rect.left+rect.width*.5,rect.top+rect.height*.3)
+      await until(()=>particles.dataset.motionState==='vortex','Production toggle did not enable particle vortex')
+      button.click()
+      await until(()=>!canvas()&&particles.dataset.motion==='static','Reduce motion did not stop effects')
+      assert(particles.dataset.motionState==='rest','Disabled particles did not restore')
+      setMotionPreference('auto')
+    })
     await check('all GPU resources and listeners clean up through StrictMode',async()=>{
       media(true,false);mount(<SplashCursor intro={false} adaptive />);await wait(150);mount(null)
       const stopped=draws;pointer(300);await wait(100);assert(draws===stopped,'Drawing after unmount')
@@ -264,6 +287,7 @@ button.onclick = async () => {
   } catch(err){results.push(`FAIL runner: ${err}`)}
   finally{
     mount(null);window.matchMedia=nativeMatch;delete document.documentElement.dataset.qaMotion
+    setMotionPreference(previousMotion==='full'||previousMotion==='reduced'?previousMotion:'auto')
     for(const key of Object.keys(native)) proto[key]=native[key]
     window.removeEventListener('error',error)
     report.textContent=results.join('\n')+'\nDONE';button.disabled=false;button.parentElement!.style.pointerEvents='auto'

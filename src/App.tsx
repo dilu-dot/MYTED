@@ -7,6 +7,8 @@ import { InteractiveTeddy } from '@/components/ui/interactive-teddy'
 import { CinematicAtmosphere } from '@/components/ui/cinematic-atmosphere'
 import { sceneLayout,SOURCE_CONTENT_HEIGHT } from '@/lib/scene-layout'
 import { FRAME_COUNT,clamp,greetingOpacity,paperOpacity,smoothstep } from '@/lib/animation'
+import { MotionToggle } from '@/components/ui/motion-toggle'
+import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { FrameSource } from '@/lib/frame-source'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -46,13 +48,13 @@ function App(){
     const paint=(p:number)=>{
       const position=clamp(p/.94)*191
       source.request(position,scrollingRef.current)
-      const lower=reduced.matches?Math.round(position):Math.floor(position),upper=reduced.matches?lower:Math.min(191,lower+1),a=source.get(lower,!scrollingRef.current),b=source.get(upper,!scrollingRef.current)
+      const lower=motionReduced(reduced.matches)?Math.round(position):Math.floor(position),upper=motionReduced(reduced.matches)?lower:Math.min(191,lower+1),a=source.get(lower,!scrollingRef.current),b=source.get(upper,!scrollingRef.current)
       if(!a&&!b)return
-      const blend=reduced.matches?0:position-lower
-      const camera=reduced.matches?1:1+.014*smoothstep(0,.75,p)*(1-smoothstep(.82,.95,p))
+      const blend=motionReduced(reduced.matches)?0:position-lower
+      const camera=motionReduced(reduced.matches)?1:1+.014*smoothstep(0,.75,p)*(1-smoothstep(.82,.95,p))
       if(!dirty&&Math.abs(lastPaint-position)<.0001&&lastBlend===blend&&lastCamera===camera)return
       const l=sceneLayout(width,height),w=1280*l.scale*camera,h=SOURCE_CONTENT_HEIGHT*l.scale*camera
-      const x=(width-w)/2,y=l.offsetY-(h-SOURCE_CONTENT_HEIGHT*l.scale)*.5-(reduced.matches?0:5*smoothstep(0,.75,p))
+      const x=(width-w)/2,y=l.offsetY-(h-SOURCE_CONTENT_HEIGHT*l.scale)*.5-(motionReduced(reduced.matches)?0:5*smoothstep(0,.75,p))
       ctx.globalAlpha=1
       if(width/height<.9){ctx.fillStyle='#230c13';ctx.fillRect(0,0,width,Math.max(0,y));ctx.fillRect(0,Math.max(0,y+h),width,height)}
       ctx.drawImage(a??b!,x,y,w,h)
@@ -70,7 +72,7 @@ function App(){
       const dt=last?Math.min((now-last)/1000,.05):1/60;last=now
       const target=handoffRef.current?0:inputRef.current
       const previous=progressRef.current
-      let p=reduced.matches?target:previous+(target-previous)*(1-Math.exp(-dt/.11))
+      let p=motionReduced(reduced.matches)?target:previous+(target-previous)*(1-Math.exp(-dt/.11))
       if(Math.abs(target-p)<.0001)p=target
       const scrolling=now-lastInput<130||Math.abs(target-p)>.0001||handoffRef.current
       if(scrollingRef.current!==scrolling){scrollingRef.current=scrolling;scene.dataset.scrolling=String(scrolling);activity()}
@@ -101,10 +103,10 @@ function App(){
     }
     const visibility=()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;last=0}else wake()}
     resize();applyProgress(0);onInput(trigger.progress)
-    window.addEventListener('resize',resize,{passive:true});document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',wake)
+    window.addEventListener('resize',resize,{passive:true});document.addEventListener('visibilitychange',visibility);const unsubscribeMotion=subscribeMotion(()=>{dirty=true;wake()})
     return()=>{
       disposed=true;renderSequenceRef.current=()=>{};cancelAnimationFrame(raf);clearTimeout(idleTimer);source.dispose();trigger.kill();triggerRef.current=null
-      window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',wake)
+      window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',visibility);unsubscribeMotion()
     }
   },[])
 
@@ -120,7 +122,7 @@ function App(){
     <header className="masthead chrome" data-chrome>
       <a href="#" className="wordmark" aria-label="Teddy — return to beginning" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:'instant'})}}>teddy<span className="wordmark-dot">.</span></a>
       <span className="edition">A LITTLE LOVE STORY</span>
-      <button onClick={skip} className="skip">Skip intro <span aria-hidden="true">↗</span></button>
+      <div className="masthead-actions"><MotionToggle/><button onClick={skip} className="skip">Skip intro <span aria-hidden="true">↗</span></button></div>
     </header>
     <div className="intro" data-chrome>
       <p className="eyebrow"><span/> SOME THINGS ARE MEANT FOR YOU</p>
