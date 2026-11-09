@@ -47,7 +47,8 @@ export function createHandler(store, { clock = () => Date.now() } = {}) {
         if (setCookie) h['Set-Cookie'] = setCookie;
         return new Response(JSON.stringify(data), { status, headers: h });
       };
-      const html = text => new Response(text, { headers: headers('text/html; charset=utf-8') });
+      // Edge Functions transport view data as JSON; Vercel renders the HTML.
+      const html = text => json(200, { view: text });
       const session = async kind => {
         const token = cookieValue(request, name(kind));
         if (!token) return null;

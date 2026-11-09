@@ -32,11 +32,18 @@ export function createProxy({ gateway, backendUrl, origins, environment, fetcher
       for (const value of upstream.headers.getSetCookie()) {
         if (/^(?:__Host-)?teddy_(?:owner|visitor)=/.test(value)) responseHeaders.append('Set-Cookie', value);
       }
-      // The Edge platform can normalize HTML responses to text/plain. Only this
-      // authenticated view route renders HTML; API responses retain their type.
-      if (route === 'owner' && upstream.status === 200) responseHeaders.set('Content-Type', 'text/html; charset=utf-8');
+      let responseBody = upstream.body;
+      // Edge Functions return JSON view data. This first-party gateway alone
+      // renders it after the backend has checked the owner session.
+      if (route === 'owner' && upstream.status === 200) {
+        const data = await upstream.json();
+        if (typeof data.view !== 'string') throw new Error('Invalid view response');
+        responseBody = data.view;
+        responseHeaders.set('Content-Type', 'text/html; charset=utf-8');
+        responseHeaders.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+      }
       responseHeaders.set('Cache-Control', 'private, no-store');
-      return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+      return new Response(responseBody, { status: upstream.status, headers: responseHeaders });
     } catch (error) {
       console.error('teddy_gateway_failure', { kind: error?.name || 'Error' });
       return Response.json({ error: 'Could not connect right now. Please try again.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });

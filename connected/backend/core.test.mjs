@@ -58,7 +58,7 @@ test('hosted flow protects owner data, validates dates, persists sessions, and s
 
 test('proxy constrains origin, replaces private headers, and preserves secure cookies', async () => {
   let forwarded;
-  const proxy = createProxy({ gateway: 'trusted', backendUrl: 'https://backend.example/function', origins: ['https://site.example'], environment: 'preview', fetcher: async (url, options) => { forwarded = options; const headers = new Headers({ 'Content-Type': 'text/plain' }); headers.append('Set-Cookie', '__Host-teddy_owner=fixture; Secure; HttpOnly; Path=/'); headers.append('Set-Cookie', '__cf_bm=provider-cookie; Domain=provider.example; Secure; Path=/'); return new Response('ok', { headers }); } });
+  const proxy = createProxy({ gateway: 'trusted', backendUrl: 'https://backend.example/function', origins: ['https://site.example'], environment: 'preview', fetcher: async (url, options) => { forwarded = options; const headers = new Headers({ 'Content-Type': 'application/json', 'Content-Security-Policy': "default-src 'none'; sandbox" }); headers.append('Set-Cookie', '__Host-teddy_owner=fixture; Secure; HttpOnly; Path=/'); headers.append('Set-Cookie', '__cf_bm=provider-cookie; Domain=provider.example; Secure; Path=/'); return new Response(JSON.stringify({view:'<h1>Owner view</h1>'}), { headers }); } });
   assert.equal((await proxy(new Request('https://other.example/api/health'))).status, 403);
   const result = await proxy(new Request('https://site.example/api/index?route=owner', { headers: { 'x-teddy-gateway': 'untrusted', 'x-teddy-environment': 'production', cookie: 'platform_session=never-forward; __Host-teddy_owner=fixture' } }));
   assert.equal(result.status, 200);
@@ -69,4 +69,7 @@ test('proxy constrains origin, replaces private headers, and preserves secure co
   assert.equal(result.headers.getSetCookie().length, 1);
   assert.doesNotMatch(result.headers.get('set-cookie'), /provider-cookie/);
   assert.equal(result.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.match(result.headers.get('content-security-policy'), /form-action 'self'/);
+  assert.doesNotMatch(result.headers.get('content-security-policy'), /sandbox/);
+  assert.equal(await result.text(), '<h1>Owner view</h1>');
 });
