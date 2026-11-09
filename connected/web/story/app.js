@@ -4,24 +4,16 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const siteRoot = new URL('../', document.baseURI);
   const apiUrl = path => new URL(`api/${path}`, siteRoot);
-  const mediaReduce = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
-  const motionButton = $('.motion-control');
-  let userReduced = null;
-  try { const saved = localStorage.getItem('teddy-reduced'); if (saved === 'true' || saved === 'false') userReduced = saved === 'true'; } catch {}
-  let reduced = userReduced ?? mediaReduce.matches;
+  const reduced = false;
   let animationContext;
   let entranceHasPlayed = false;
   const hasGsap = Boolean(window.gsap && window.ScrollTrigger);
   if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 
   function setupMotion() {
-    reduced = userReduced ?? mediaReduce.matches;
     document.documentElement.classList.toggle('motion-reduced', reduced);
     document.documentElement.classList.toggle('motion-enabled', !reduced);
-    motionButton.setAttribute('aria-pressed', String(reduced));
-    motionButton.setAttribute('aria-label', reduced ? 'Enable animations' : 'Reduce animations');
-    $('.motion-control span').textContent = reduced ? 'motion off' : 'motion on';
     animationContext?.revert();
     if (!hasGsap) return;
     animationContext = gsap.context(() => {
@@ -40,13 +32,6 @@
     requestAnimationFrame(() => ScrollTrigger.refresh());
   }
   setupMotion();
-  motionButton.addEventListener('click', () => {
-    userReduced = !reduced;
-    try { localStorage.setItem('teddy-reduced', String(userReduced)); } catch {}
-    setupMotion();
-    syncCursor();
-  });
-  mediaReduce.addEventListener('change', () => { setupMotion(); syncCursor(); });
   window.addEventListener('load', () => { if (hasGsap) ScrollTrigger.refresh(); }, { once: true });
   document.fonts?.ready.then(() => { if (hasGsap) ScrollTrigger.refresh(); });
 

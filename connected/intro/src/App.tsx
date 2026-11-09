@@ -7,7 +7,6 @@ import { InteractiveTeddy } from '@/components/ui/interactive-teddy'
 import { CinematicAtmosphere } from '@/components/ui/cinematic-atmosphere'
 import { sceneLayout,SOURCE_CONTENT_HEIGHT } from '@/lib/scene-layout'
 import { FRAME_COUNT,LETTER_REVEAL_PROGRESS,clamp,greetingOpacity,paperOpacity,smoothstep } from '@/lib/animation'
-import { MotionToggle } from '@/components/ui/motion-toggle'
 import { motionReduced, subscribeMotion } from '@/lib/motion'
 import { FrameSource } from '@/lib/frame-source'
 const ConfessionLetter=lazy(()=>import('@/components/ui/confession-letter').then(module=>({default:module.ConfessionLetter})))
@@ -125,7 +124,7 @@ function App(){
     <header className="masthead chrome" data-chrome>
       <a href="#" className="wordmark" aria-label="Teddy — return to beginning" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:'instant'})}}>teddy<span className="wordmark-dot">.</span></a>
       <span className="edition">A LITTLE LOVE STORY</span>
-      <div className="masthead-actions"><MotionToggle/><button onClick={skip} className="skip">Skip intro <span aria-hidden="true">↗</span></button></div>
+      <div className="masthead-actions"><button onClick={skip} className="skip">Skip intro <span aria-hidden="true">↗</span></button></div>
     </header>
     <div className="intro" data-chrome>
       <p className="eyebrow"><span/> SOME THINGS ARE MEANT FOR YOU</p>
