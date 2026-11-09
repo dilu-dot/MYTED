@@ -14,7 +14,8 @@
   <link rel="stylesheet" href="photo-story.css?v=answer-glow-1">
   <script defer src="assets/gsap.min.js"></script>
   <script defer src="assets/ScrollTrigger.min.js"></script>
-  <script defer src="app.js?v=connected-2"></script>
+  <link rel="stylesheet" href="journey.css?v=cake-1">
+  <script defer src="app.js?v=connected-3"></script>
   <script defer src="assets/photo-effects.js"></script>
 </head>
 <body class="photo-story">
@@ -89,6 +90,59 @@
   <dialog id="portrait-dialog" class="portrait-dialog" aria-labelledby="portrait-caption"><button class="dialog-close" data-close aria-label="Close portrait"><i class="bi bi-x-lg" aria-hidden="true"></i></button><div class="expanded-frame" id="expanded-frame"><div id="expanded-portrait"></div></div><p id="portrait-caption"></p><div class="portrait-controls"><button id="portrait-prev" aria-label="Previous portrait"><i class="bi bi-arrow-left" aria-hidden="true"></i></button><span id="portrait-position"></span><button id="portrait-next" aria-label="Next portrait"><i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></dialog>
   <dialog id="response-dialog" class="response-dialog" aria-labelledby="response-title" aria-describedby="response-message"><button class="dialog-close" data-close aria-label="Close note"><i class="bi bi-x-lg" aria-hidden="true"></i></button><p class="eyebrow">JUST BETWEEN US</p><i class="bi bi-heart response-heart" aria-hidden="true"></i><h2 id="response-title"></h2><p id="response-message"></p><button class="pill light" data-close><span>Keep this little feeling</span><i class="bi bi-heart" aria-hidden="true"></i></button><button class="text-button" id="share-plan" hidden><i class="bi bi-share" aria-hidden="true"></i> Share our little plan</button><p id="share-status" class="choice-note" role="status"></p></dialog>
   <div class="celebration" aria-hidden="true"></div>
+  <dialog id="journey-dialog" class="journey-dialog" aria-labelledby="journey-title" aria-describedby="journey-note">
+    <div class="journey-sparks" aria-hidden="true"></div>
+    <div class="journey-content">
+      <p class="journey-eyebrow">ONE YES. A THOUSAND LITTLE POSSIBILITIES.</p>
+      <p class="journey-handwritten">a little cake for a very big feeling.</p>
+      <div class="journey-cake" aria-hidden="true">
+        <svg viewBox="0 0 460 350" fill="none" role="presentation">
+          <defs>
+            <linearGradient id="cake-sponge" x1="99" y1="190" x2="350" y2="270" gradientUnits="userSpaceOnUse"><stop stop-color="#eab69e"/><stop offset=".45" stop-color="#fff0d7"/><stop offset="1" stop-color="#bf7d7d"/></linearGradient>
+            <linearGradient id="cake-icing" x1="100" y1="150" x2="320" y2="245" gradientUnits="userSpaceOnUse"><stop stop-color="#fff9ee"/><stop offset="1" stop-color="#efd6ce"/></linearGradient>
+            <linearGradient id="cake-top" x1="120" y1="130" x2="320" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="#fffdf6"/><stop offset="1" stop-color="#efc4c8"/></linearGradient>
+            <linearGradient id="cake-blade" x1="0" y1="0" x2="32" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#a2897d"/><stop offset=".42" stop-color="#fffaf0"/><stop offset=".7" stop-color="#e1d2bf"/><stop offset="1" stop-color="#b59c87"/></linearGradient>
+            <radialGradient id="cake-shadow"><stop stop-color="#61223d" stop-opacity=".35"/><stop offset="1" stop-color="#61223d" stop-opacity="0"/></radialGradient>
+            <mask id="cake-wedge"><rect width="460" height="350" fill="white"/><path d="M221 173L357 199V269L279 296L221 235Z" fill="black"/></mask>
+          </defs>
+          <ellipse cx="233" cy="307" rx="190" ry="34" fill="url(#cake-shadow)"/>
+          <ellipse cx="228" cy="285" rx="172" ry="46" fill="#d1ad83"/>
+          <ellipse cx="228" cy="281" rx="172" ry="44" fill="#f4e3ca"/>
+          <ellipse cx="228" cy="277" rx="156" ry="36" stroke="#b18b63" stroke-opacity=".5"/>
+          <g mask="url(#cake-wedge)">
+            <path d="M88 170V244C88 271 150 294 226 294S364 271 364 244V170" fill="url(#cake-sponge)"/>
+            <path d="M89 226C140 265 307 269 364 226V243C299 279 148 281 89 243Z" fill="#c57689"/>
+            <path d="M89 217C151 253 300 254 364 217V229C300 263 153 265 89 229Z" fill="#fff3de"/>
+            <path d="M88 170V209C94 226 104 208 111 213C125 220 125 234 136 231C146 228 137 208 151 209C165 210 166 228 178 223C186 220 181 210 194 210C207 211 209 231 221 225C233 220 229 209 245 209C258 210 256 229 270 225C280 221 275 206 288 205C304 205 300 222 314 216C324 211 320 200 333 201C345 202 351 212 364 196V170Z" fill="url(#cake-icing)"/>
+            <ellipse cx="226" cy="170" rx="138" ry="48" fill="url(#cake-top)"/>
+            <ellipse cx="226" cy="169" rx="124" ry="38" stroke="#fff7e9" stroke-width="4" stroke-dasharray="1 10" stroke-linecap="round"/>
+            <path d="M147 157l5 2m140-11 5-3m-33 31 6 2m-102 8 6-3m45-43 2 5" stroke="#bc718c" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g class="cake-slice">
+            <path d="M221 173L357 199V269L279 296L221 235Z" fill="#f0c3a8"/>
+            <path d="M221 173L279 218V296L221 251Z" fill="#e7ac9e"/>
+            <path d="M279 218L357 199V269L279 296Z" fill="url(#cake-sponge)"/>
+            <path d="M221 215L279 260L357 237V250L279 276L221 230Z" fill="#c57689"/>
+            <path d="M221 207L279 251L357 229V239L279 263L221 219Z" fill="#fff5df"/>
+            <path d="M221 173L357 199V213L279 238L221 192Z" fill="#f7e1d8"/>
+            <path d="M221 173L357 199L279 221Z" fill="url(#cake-top)"/>
+            <path d="M279 221L357 199" stroke="#fff6e8" stroke-width="4" stroke-linecap="round"/>
+            <path d="M298 205l6-2m-35-10 5 3" stroke="#bc718c" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g class="cake-candle"><path d="M204 147V104C204 99 216 99 216 104V147C216 152 204 152 204 147Z" fill="#d78fa7"/><path d="M205 111l10-6m-10 19 10-6m-10 19 10-6" stroke="#fff1df" stroke-width="3"/><path d="M210 102V94" stroke="#654435" stroke-width="2"/><path class="cake-flame" d="M210 72C198 85 204 96 210 96C218 96 224 84 210 72Z" fill="#f2bb67"/><path d="M210 84C204 90 207 96 210 96C214 96 216 91 210 84Z" fill="#fff5c6"/></g>
+          <path d="M249 150C241 135 224 144 230 154L249 171L268 154C276 140 255 133 249 150Z" fill="#b94e72"/>
+          <g class="cake-knife"><g transform="translate(261 13) rotate(27)"><rect width="16" height="62" rx="7" fill="#6a3448"/><path d="M2 58H29V155L2 181Z" fill="url(#cake-blade)"/><path d="M5 65V167" stroke="#fff9eb" stroke-opacity=".8"/></g></g>
+          <path class="cake-cut-glint" d="M221 173L279 221" stroke="#fff7da" stroke-width="3" stroke-linecap="round"/>
+          <g class="cake-twinkles" fill="#d5a86d"><path d="M68 124l4 10 10 4-10 4-4 10-4-10-10-4 10-4Z"/><path d="M389 147l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="M345 85l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>
+        </svg>
+      </div>
+      <h2 id="journey-title" tabindex="-1">Here our journey<br><em>begins.</em></h2>
+      <p id="journey-note" class="journey-note">A little yes. A little cake. A whole new chapter.</p>
+      <p id="journey-plan" class="journey-plan"></p>
+      <div class="journey-actions"><a href="/?journey=beginning" class="journey-home">Back to our beginning <span aria-hidden="true">↗</span></a><button id="journey-pause" type="button" aria-pressed="false">Stay a little longer</button></div>
+      <p class="journey-return">Returning to our little beginning in <span id="journey-countdown">10</span> seconds.</p>
+    </div>
+  </dialog>
   <noscript><p class="noscript">The story is here to read. Enable JavaScript for the interactive story and date planner.</p></noscript>
 </body>
 </html>

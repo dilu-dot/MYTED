@@ -62,3 +62,7 @@ Fixed non-canonical compact/week dates accepted by Python but unreadable by the 
 The public repository intentionally excludes the private celebration template, preview, generated passwords, databases, dependencies and environment files. The full local ZIP contains the design but no credentials or saved responses. The existing owner email is loaded from the private database rather than hardcoded in public source.
 
 Delayed-save browser regression: a forced failure restored activity/calendar buttons and preserved past-day restrictions; retry saved the exact new selection and displayed matching confirmation. See VERIFICATION.md.
+
+## Cake celebration
+
+After the server confirms a saved date, the visitor sees an illustrated cake-cutting animation, confetti and “Here our journey begins.” A ten-second countdown returns to the first 3D scene at `/?journey=beginning`. “Stay a little longer” pauses both the animation and countdown; the countdown also pauses in hidden tabs. Reduced-motion mode displays the cake without animation. A direct return link and Escape also return to the opening. Failed saves never begin the celebration. The private owner celebration is separate.

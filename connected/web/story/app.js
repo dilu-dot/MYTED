@@ -255,6 +255,55 @@
     updatePlan();
   }));
   let sendingPlan = false;
+  const journeyDialog = $('#journey-dialog');
+  let journeyTimer = 0, journeyPaused = false, journeyRemaining = 10000, journeyLastTick = 0;
+  function syncJourneyPause() {
+    journeyDialog.classList.toggle('journey-paused', journeyPaused || document.hidden);
+    journeyLastTick = performance.now();
+  }
+  function returnToBeginning() {
+    clearInterval(journeyTimer);
+    location.replace('/?journey=beginning');
+  }
+  function beginJourney(activity, date) {
+    $('#journey-plan').textContent = `${activity}, together. ${compactDateFormat.format(date)}.`;
+    journeyRemaining = 10000; journeyPaused = false; journeyLastTick = performance.now();
+    $('#journey-countdown').textContent = '10';
+    $('.journey-return').hidden = false;
+    $('#journey-pause').textContent = 'Stay a little longer';
+    $('#journey-pause').setAttribute('aria-pressed', 'false');
+    if (!$('.journey-sparks').children.length) {
+      for (let i = 0; i < 30; i++) {
+        const spark = document.createElement('i');
+        spark.style.setProperty('--left', `${i * 37 % 100}%`);
+        spark.style.setProperty('--color', ['#b47390', '#d7b17c', '#e9c5b0'][i % 3]);
+        spark.style.setProperty('--duration', `${5 + i % 4}s`);
+        spark.style.setProperty('--delay', `${-i * .37}s`);
+        $('.journey-sparks').append(spark);
+      }
+    }
+    openDialog(journeyDialog);
+    syncJourneyPause();
+    clearInterval(journeyTimer);
+    journeyTimer = setInterval(() => {
+      const now = performance.now();
+      if (!journeyPaused && !document.hidden) journeyRemaining -= now - journeyLastTick;
+      journeyLastTick = now;
+      $('#journey-countdown').textContent = String(Math.max(0, Math.ceil(journeyRemaining / 1000)));
+      if (journeyRemaining <= 0) returnToBeginning();
+    }, 200);
+  }
+  $('#journey-pause').addEventListener('click', () => {
+    journeyPaused = !journeyPaused;
+    $('#journey-pause').setAttribute('aria-pressed', String(journeyPaused));
+    $('#journey-pause').textContent = journeyPaused ? 'Continue to our beginning' : 'Stay a little longer';
+    $('.journey-return').hidden = journeyPaused;
+    syncJourneyPause();
+  });
+  journeyDialog.addEventListener('cancel', event => { event.preventDefault(); returnToBeginning(); });
+  journeyDialog.addEventListener('close', () => clearInterval(journeyTimer));
+  document.addEventListener('visibilitychange', syncJourneyPause);
+  addEventListener('pagehide', () => clearInterval(journeyTimer));
   $('#date-confirm').addEventListener('click', async () => {
     if (sendingPlan) return;
     if (!chosenActivity || !chosenDate) {
@@ -281,12 +330,7 @@
       return;
     } finally { sendingPlan = false; controls.forEach(([button, disabled]) => { button.disabled = disabled; }); }
     $('#date-feedback').textContent = 'Your little plan has been shared with Rizwan.';
-    $('#response-title').textContent = 'A little plan for two.';
-    $('#response-message').textContent = `How about ${submittedActivity.toLowerCase()} on ${fullDateFormat.format(submittedDate)}? Your yes and chosen day have been shared with Rizwan. You can confirm the details together; nothing has been booked.`;
-    shareText = `How about ${submittedActivity.toLowerCase()} on ${fullDateFormat.format(submittedDate)}? Let’s confirm together — no pressure.`;
-    $('#share-plan').hidden = false;
-    $('#share-status').textContent = 'Saved. You can also share a message if you like.';
-    openDialog(responseDialog);
+    beginJourney(submittedActivity, submittedDate);
   });
   $('#share-plan').addEventListener('click', async () => {
     if (!shareText) return;

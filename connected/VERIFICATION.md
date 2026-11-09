@@ -8,3 +8,7 @@
 - No cloud deployment or main-branch update was performed during verification.
 
 The private celebration design/preview, credentials, data and environment files are excluded from the public GitHub tree. The full downloadable ZIP includes the private design, without credentials or saved answers.
+
+## Cake continuation check
+
+JavaScript syntax and backend integration checks passed. An isolated browser confirmation saved Coffee / 12 November 2026, then opened the cake scene. Computed SVG styles confirmed the animated separated slice and knife animation. Desktop and 390px phone layouts had no horizontal overflow. Pause kept the scene open; resume returned automatically to `/?journey=beginning`, with scrollY=0 and scene progress=0.00000. No console errors or warnings were captured. Sample data was isolated from the real owner database.
