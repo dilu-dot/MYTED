@@ -11,10 +11,12 @@ export function createProxy({ gateway, backendUrl, origins, environment, fetcher
       const body = request.method === 'POST' ? await request.text() : undefined;
       if (body && new TextEncoder().encode(body).length > 4096) return Response.json({ error: 'Invalid request.' }, { status: 413 });
       const headers = new Headers();
-      for (const name of ['cookie', 'origin', 'content-type', 'x-csrf-token']) {
+      for (const name of ['origin', 'content-type', 'x-csrf-token']) {
         const value = request.headers.get(name);
         if (value) headers.set(name, value);
       }
+      const appCookies = request.headers.get('cookie')?.split(';').map(part => part.trim()).filter(part => /^(?:__Host-)?teddy_(?:owner|visitor)=/.test(part)).join('; ');
+      if (appCookies) headers.set('cookie', appCookies);
       // Incoming gateway/scope/IP headers are always replaced, never trusted.
       headers.set('x-teddy-gateway', gateway);
       headers.set('x-teddy-route', route);
@@ -23,9 +25,12 @@ export function createProxy({ gateway, backendUrl, origins, environment, fetcher
       headers.set('x-teddy-client-ip', request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown');
       const upstream = await fetcher(backendUrl, { method: request.method, headers, body, redirect: 'error', signal: AbortSignal.timeout(20000) });
       const responseHeaders = new Headers();
-      for (const name of ['content-type', 'cache-control', 'x-content-type-options', 'x-frame-options', 'referrer-policy', 'x-robots-tag', 'content-security-policy', 'set-cookie']) {
+      for (const name of ['content-type', 'cache-control', 'x-content-type-options', 'x-frame-options', 'referrer-policy', 'x-robots-tag', 'content-security-policy']) {
         const value = upstream.headers.get(name);
         if (value) responseHeaders.set(name, value);
+      }
+      for (const value of upstream.headers.getSetCookie()) {
+        if (/^(?:__Host-)?teddy_(?:owner|visitor)=/.test(value)) responseHeaders.append('Set-Cookie', value);
       }
       responseHeaders.set('Cache-Control', 'private, no-store');
       return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });

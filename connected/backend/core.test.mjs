@@ -58,11 +58,14 @@ test('hosted flow protects owner data, validates dates, persists sessions, and s
 
 test('proxy constrains origin, replaces private headers, and preserves secure cookies', async () => {
   let forwarded;
-  const proxy = createProxy({ gateway: 'trusted', backendUrl: 'https://backend.example/function', origins: ['https://site.example'], environment: 'preview', fetcher: async (url, options) => { forwarded = options; return new Response('ok', { headers: { 'Set-Cookie': '__Host-teddy_owner=fixture; Secure; HttpOnly; Path=/', 'Content-Type': 'text/plain' } }); } });
+  const proxy = createProxy({ gateway: 'trusted', backendUrl: 'https://backend.example/function', origins: ['https://site.example'], environment: 'preview', fetcher: async (url, options) => { forwarded = options; const headers = new Headers({ 'Content-Type': 'text/plain' }); headers.append('Set-Cookie', '__Host-teddy_owner=fixture; Secure; HttpOnly; Path=/'); headers.append('Set-Cookie', '__cf_bm=provider-cookie; Domain=provider.example; Secure; Path=/'); return new Response('ok', { headers }); } });
   assert.equal((await proxy(new Request('https://other.example/api/health'))).status, 403);
-  const result = await proxy(new Request('https://site.example/api/index?route=owner', { headers: { 'x-teddy-gateway': 'untrusted', 'x-teddy-environment': 'production' } }));
+  const result = await proxy(new Request('https://site.example/api/index?route=owner', { headers: { 'x-teddy-gateway': 'untrusted', 'x-teddy-environment': 'production', cookie: 'platform_session=never-forward; __Host-teddy_owner=fixture' } }));
   assert.equal(result.status, 200);
   assert.equal(forwarded.headers.get('x-teddy-gateway'), 'trusted');
   assert.equal(forwarded.headers.get('x-teddy-environment'), 'preview');
+  assert.equal(forwarded.headers.get('cookie'), '__Host-teddy_owner=fixture');
   assert.match(result.headers.get('set-cookie'), /Secure; HttpOnly/);
+  assert.equal(result.headers.getSetCookie().length, 1);
+  assert.doesNotMatch(result.headers.get('set-cookie'), /provider-cookie/);
 });
