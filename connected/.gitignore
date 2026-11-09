@@ -14,3 +14,7 @@ celebration-preview-test-data.jpg
 test-results/
 playwright-report/
 *.log
+
+hosted-owner-*.jpg
+cloud-settings*.json
+*-test-cookies.json

@@ -1,103 +1,58 @@
-# TEDDY — connected local website
+# TEDDY — hosted love story
 
-The existing 3D panda intro and personal white letter now lead to the approved six-photo story, glowing answer buttons, and date planner. At the end of the original letter, **There’s something more** opens `/story/` on the same server.
+Live website: https://teddy-v2.vercel.app/
 
-## Open
+Private owner login: https://teddy-v2.vercel.app/owner
 
-- Website: http://127.0.0.1:5191/
-- Your private space: http://127.0.0.1:5191/owner
-- Owner account: the email configured on your first server start.
-- Your generated private password is in `%USERPROFILE%\.teddy-private\owner-access.txt`. This is a separate site password, **not your Google password**. Keep that file private. It is not in the public website or ZIP.
+## The experience
 
-Run with Python 3.11 or later, with no additional Python packages:
+The panda intro opens the personal white letter. “There’s something more” continues to the six-photo story and the three answer buttons. Yes reveals the activity/date planner. Only explicit confirmation saves a plan; successful saving starts the cake-cutting scene, then returns to the first 3D page. The countdown can be paused. Reduced-motion preferences are respected.
 
-```powershell
-$env:TEDDY_OWNER_EMAIL = 'your-email@example.com'
-python server.py --port 5191
-```
+The owner dashboard is behind a separate email/password login. It starts in a waiting state and shows the saved activity/day and celebration only after an acceptance. There is no owner link in visitor navigation. Knowing the URL does not grant access.
 
-Set the email only on a fresh installation. Existing installations keep the account already saved in their private database; changing an environment variable cannot replace it. The server defaults to loopback only. Keep it running while using the preview. This implementation is local; it has not replaced the Vercel deployment or created a public sharing URL. A static host or `python -m http.server` cannot run the protected dashboard or save responses.
+## Owner access
 
-## What happens
+Use the existing site password from `%USERPROFILE%\.teddy-private\owner-access.txt`; this is not a Google password. No passwords or account secrets are in this repository or the release ZIP. Keep the local private configuration directory out of shared backups and source control.
 
-The date section appears when she selects Yes. It explains that confirmation shares her yes, activity and day with Rizwan. Only **Confirm our little plan** submits the response. No email, booking, message or background tracking is sent. Time/friends choices remain ordinary respectful notes.
+## Hosted backend
 
-Your dashboard starts with a waiting state. After a confirmed acceptance it shows the latest chosen date, activity, confirmation time, India-time countdown, and animated gold stars and hearts. It refreshes every 15 seconds while visible. The preview screenshot uses isolated **sample data**, not a real answer.
+Vercel serves the frontend and a same-origin API gateway. A Supabase Edge Function handles authentication and Postgres persistence. The Edge runtime receives its database keys from the platform; no database server key is sent to Vercel or the browser. The gateway replaces internal headers and passes only this app’s session cookies. Protected view data is transported as JSON and rendered at Vercel with the app’s content-security policy.
 
-## Privacy and persistence
+All four data tables use RLS and deny anonymous/authenticated direct access. The backend alone accesses them through its runtime key. Owner settings, the password verifier and private celebration design stay in the protected database. Preview and production have different gateway keys and separate data/session scopes. Sessions expire, use HttpOnly/Secure cookies, and are revoked on logout. Writes require same-origin and CSRF checks; login and saves have database-backed rate limits. Test responses have been removed from production.
 
-The server validates the exact owner email and a generated high-entropy password, stored as a salted scrypt hash. Sessions expire after 12 hours, use random tokens stored hashed in SQLite, and travel in HttpOnly/SameSite Strict cookies. Login is rate limited; writes require same-origin requests and CSRF tokens. Sign-out invalidates the session on the server. Only the public `web/` directory is served. Private templates, source, passwords and the database cannot be downloaded through static URLs.
+## Source
 
-The `/owner` route has no visitor navigation link. Knowing the URL only reveals the sign-in page. The celebration HTML and saved responses require authentication. Authentication is an email-and-password allowlist; it does not claim to verify a Google identity or send magic-link emails.
+- `intro/`: editable React panda/letter source and frames.
+- `web/story/`: photo story, date planner and cake animation.
+- `api/index.mjs`: Vercel API entry point.
+- `backend/`: gateway, Edge handler, schema and regression tests.
+- `private/`: local-only celebration template, excluded from public GitHub. The full private design is included in the owner’s downloadable source ZIP.
+- `server.py`: offline/local SQLite version, retained without changing local responses.
 
-SQLite and credentials live outside the webroot at `%USERPROFILE%\.teddy-private`. Changes survive server restarts; duplicate confirmations from the same browser session update its plan. Back up that directory privately; deleting it loses saved plans and creates new credentials. Other people with administrator access to this computer can access local files. Do not share the password or an already signed-in browser profile.
+## Build and check
 
-## Hosting later
-
-Public deployment needs a Python-capable host, persistent disk for SQLite, and HTTPS. Remote binding is rejected unless an explicit HTTPS `--origin` is provided. A trusted reverse proxy must enforce TLS and the configured host; remote cookies then use Secure. Vercel's current static deployment does not run this Python HTTP server and must not receive a database on ephemeral disk. No cloud costs or project settings were changed. For a Vercel deployment, migrate persistence and owner authentication to a managed backend first.
-
-## Source and rebuilding
-
-- `intro/src/` preserves the existing panda, splash cursor, particles, repeating letter blur and motion settings. Only the end-of-letter continuation and its CSS were added.
-- `web/` is the built intro plus the editable static photo app at `web/story/`.
-- `templates/login.html` contains the sign-in screen. The celebration design in `private/celebration.html` is included only in your local full ZIP, and is excluded from the public GitHub push. A repository-only checkout returns 503 after authentication until this private template is supplied; it never bypasses authentication. You can keep templates elsewhere using `TEDDY_PRIVATE_TEMPLATES`.
-- `server.py` owns authentication, validation and persistence.
-
-To rebuild the intro: run `npm install`, then `npm run build` from `intro/`; copy `intro/dist/` into `web/` without removing `web/story/`. The local checkout uses an existing dependency directory through a junction; the source ZIP excludes all dependencies, credentials and databases.
-
-## Verification
-
-```powershell
-python test_server.py
-```
-
-Tests use a temporary database and credentials. They check unauthorized reads, private file access and traversal, incorrect email, cross-origin rejection, cookies, missing CSRF, invalid dates/activities, duplicate confirmation, persistence after restart, and session invalidation after logout.
-
-Browser verification covered the actual letter link, the full sample acceptance flow, private waiting-to-celebration transition, sign-out, and a 390px phone viewport with no horizontal overflow. Build passed. Lint completed with eight inherited React warnings in the existing blur/splash components; no new lint errors. Actual phone hardware, public hosting and email notifications were not tested or configured.
-
-## Pre-push review — 9 November 2026
-
-Fixed non-canonical compact/week dates accepted by Python but unreadable by the dashboard. The API now accepts only YYYY-MM-DD. Locked date controls during submission, captured an immutable selection before the first request, and restored their original disabled states on success or failure. The confirmation and optional share message now describe the exact saved selection.
-
-The public repository intentionally excludes the private celebration template, preview, generated passwords, databases, dependencies and environment files. The full local ZIP contains the design but no credentials or saved responses. The existing owner email is loaded from the private database rather than hardcoded in public source.
-
-Delayed-save browser regression: a forced failure restored activity/calendar buttons and preserved past-day restrictions; retry saved the exact new selection and displayed matching confirmation. See VERIFICATION.md.
-
-## Cake celebration
-
-After the server confirms a saved date, the visitor sees an illustrated cake-cutting animation, confetti and “Here our journey begins.” A ten-second countdown returns to the first 3D scene at `/?journey=beginning`. “Stay a little longer” pauses both the animation and countdown; the countdown also pauses in hidden tabs. Reduced-motion mode displays the cake without animation. A direct return link and Escape also return to the opening. Failed saves never begin the celebration. The private owner celebration is separate.
-
-## Frontend-only build and GitHub Pages
-
-The complete frontend now has one build entry point. From this connected directory:
+From this connected directory:
 
 ```powershell
 npm run install:frontend
 npm run build
 npm run check:frontend
+npm run test:backend
 npm run preview
 ```
 
-For the existing GitHub Pages repository path:
+For a static `/MYTED/` subdirectory build, add `-- --base=/MYTED/` to build, check:frontend and preview. A static-only host cannot save responses or authenticate the owner. The public GitHub Pages entry redirects to the full hosted site instead.
+
+The Vercel project uses this directory as its root, `npm ci --prefix intro` to install, `npm run build`, and `dist/` for public assets. Only the runtime gateway reads `TEDDY_GATEWAY_SECRET`, `TEDDY_BACKEND_URL` and `TEDDY_SITE_ORIGIN`. Values are managed in Vercel settings and are never prefixed with VITE_. The Edge function and protected settings were provisioned separately in the owner’s Supabase organization.
+
+## Local version
 
 ```powershell
-npm run build -- --base=/MYTED/
-npm run check:frontend -- --base=/MYTED/
-npm run preview -- --base=/MYTED/ --port=5195
+python server.py --port 5191
 ```
 
-The generated `dist/` includes the compiled panda/letter app, all frames, the complete photo story, fonts, icons and cake animation. It excludes the Python server, owner views and saved responses. `.nojekyll` is generated for static hosting. Letter, home, API and cake-return paths now respect the deployment subdirectory.
+An existing installation retains its saved owner account. On a fresh installation set TEDDY_OWNER_EMAIL first. This local version stores its SQLite database outside the webroot at `%USERPROFILE%\.teddy-private`; the hosted version uses Postgres and does not depend on this computer staying on.
 
-A frontend-only static host cannot save a plan or authenticate the owner. Missing services show a recoverable error, without a false success celebration. Connect a hosted backend before sharing the final interactive site with the recipient.
+## Verification
 
-At the check on 9 November 2026, https://dilu-dot.github.io/MYTED/ still served the old main-branch React source (`/src/main.tsx`) and rendered a blank page. The corrected source is on `codex/teddy-connected`; that is separate from publishing it to the live Pages site. The frontend-check workflow builds this branch and validates paths; it does not deploy or change the backend.
-
-## Hosted release architecture
-
-Vercel serves the compiled frontend and a same-origin API gateway. The hosted backend runs in a Supabase Edge Function with persistent Postgres storage. The gateway replaces incoming internal headers; preview and production use different credentials and separate response/session rows. Only the server can access data tables: RLS is enabled and anonymous/authenticated table privileges are revoked.
-
-Owner settings, password verifier, private celebration design and session secrets are stored in the protected database, not the repository or frontend. The existing site password is retained using a PBKDF2-SHA256 verifier. Sessions use 256-bit random HttpOnly/Secure cookies, server-side expiration, CSRF checks and database-backed rate limits. The app only records a plan when the recipient explicitly confirms it.
-
-The public gateway reads TEDDY_GATEWAY_SECRET, TEDDY_BACKEND_URL and TEDDY_SITE_ORIGIN from Vercel settings. The Supabase runtime injects database credentials into the server automatically. No Supabase server key is copied to the browser or Vercel. Backend schema and tests are in backend/; no private configuration is included.
-
-Run npm run test:backend for isolated auth/access/validation/proxy regression checks. Hosted checks additionally verify actual database persistence and row permissions. The Python server remains available for the local version.
+Frontend build/asset checks and hosted backend regression checks passed in GitHub Actions. Hosted API tests covered login, secure cookies, explicit saving, persistent owner reads, unauthorized-read rejection and logout. Browser checks covered the public intro/letter/photo routes and owner sign-in. See HOSTING-STATUS.md for release evidence. The Supabase project was quoted at $0/month; no paid plan upgrades were enabled.

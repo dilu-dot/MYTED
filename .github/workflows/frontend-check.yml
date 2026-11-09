@@ -2,7 +2,7 @@ name: Connected frontend check
 
 on:
   push:
-    branches: [codex/teddy-connected]
+    branches: [codex/teddy-connected, main]
     paths: ['connected/**', '.github/workflows/frontend-check.yml']
   pull_request:
     paths: ['connected/**', '.github/workflows/frontend-check.yml']
