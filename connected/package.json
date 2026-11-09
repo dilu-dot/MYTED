@@ -6,6 +6,7 @@
     "install:frontend": "npm ci --prefix intro",
     "build": "node scripts/build-frontend.cjs",
     "preview": "node scripts/preview-frontend.cjs",
-    "check:frontend": "node scripts/check-frontend.cjs"
+    "check:frontend": "node scripts/check-frontend.cjs",
+    "test:backend": "node --test backend/core.test.mjs"
   }
 }

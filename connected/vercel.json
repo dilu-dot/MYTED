@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "installCommand": "npm ci --prefix intro",
+  "outputDirectory": "dist",
+  "regions": ["bom1"],
+  "functions": { "api/index.mjs": { "maxDuration": 30 } },
+  "rewrites": [
+    { "source": "/owner", "destination": "/api/index?route=owner" },
+    { "source": "/owner/", "destination": "/api/index?route=owner" },
+    { "source": "/api/:route*", "destination": "/api/index?route=:route*" }
+  ],
+  "headers": [{ "source": "/(.*)", "headers": [
+    { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+    { "key": "X-Content-Type-Options", "value": "nosniff" },
+    { "key": "Referrer-Policy", "value": "same-origin" },
+    { "key": "X-Frame-Options", "value": "DENY" }
+  ] }]
+}

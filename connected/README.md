@@ -91,3 +91,13 @@ The generated `dist/` includes the compiled panda/letter app, all frames, the co
 A frontend-only static host cannot save a plan or authenticate the owner. Missing services show a recoverable error, without a false success celebration. Connect a hosted backend before sharing the final interactive site with the recipient.
 
 At the check on 9 November 2026, https://dilu-dot.github.io/MYTED/ still served the old main-branch React source (`/src/main.tsx`) and rendered a blank page. The corrected source is on `codex/teddy-connected`; that is separate from publishing it to the live Pages site. The frontend-check workflow builds this branch and validates paths; it does not deploy or change the backend.
+
+## Hosted release architecture
+
+Vercel serves the compiled frontend and a same-origin API gateway. The hosted backend runs in a Supabase Edge Function with persistent Postgres storage. The gateway replaces incoming internal headers; preview and production use different credentials and separate response/session rows. Only the server can access data tables: RLS is enabled and anonymous/authenticated table privileges are revoked.
+
+Owner settings, password verifier, private celebration design and session secrets are stored in the protected database, not the repository or frontend. The existing site password is retained using a PBKDF2-SHA256 verifier. Sessions use 256-bit random HttpOnly/Secure cookies, server-side expiration, CSRF checks and database-backed rate limits. The app only records a plan when the recipient explicitly confirms it.
+
+The public gateway reads TEDDY_GATEWAY_SECRET, TEDDY_BACKEND_URL and TEDDY_SITE_ORIGIN from Vercel settings. The Supabase runtime injects database credentials into the server automatically. No Supabase server key is copied to the browser or Vercel. Backend schema and tests are in backend/; no private configuration is included.
+
+Run npm run test:backend for isolated auth/access/validation/proxy regression checks. Hosted checks additionally verify actual database persistence and row permissions. The Python server remains available for the local version.

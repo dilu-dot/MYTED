@@ -28,3 +28,5 @@ jobs:
         run: npm --prefix connected run build -- --base=/MYTED/
       - name: Check compiled routes and assets
         run: npm --prefix connected run check:frontend -- --base=/MYTED/
+      - name: Check hosted backend access rules
+        run: npm --prefix connected run test:backend

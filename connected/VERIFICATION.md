@@ -22,3 +22,7 @@ JavaScript syntax and backend integration checks passed. An isolated browser con
 - Static-only preview: unavailable API produced a recoverable connection message, left controls enabled, and did not show a fake cake success.
 - Isolated subpath fixture: successful sample save displayed the cake, then automatically returned to /MYTED/?journey=beginning with scrollY=0 and scene progress=0.00000. No real response was submitted by this check.
 - Backend source, private credentials, saved answers, main branch and live deployment were not changed.
+
+## Hosted backend preparation
+
+Core and gateway regression checks pass: owner-only reads, password verification, Secure/HttpOnly cookies, same-origin/CSRF checks, invalid dates, duplicate confirmation, session persistence and environment isolation. The hosted Edge API test passed health, actual saved-plan storage, authenticated owner reads and rejection of visitor reads in a separate test environment. All four data tables have RLS enabled; anon and authenticated roles have no SELECT privileges on plans or settings. Security advisors report only informational no-policy findings, intentional for these server-only tables.
