@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#180e13">
+  <meta name="description" content="A little world of small moments and big feelings. Just for Teddy.">
+  <title>Teddy — A little closer</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="assets/photos/ivory-portrait.webp" as="image">
+  <link rel="stylesheet" href="assets/fonts.css">
+  <link rel="stylesheet" href="assets/icons.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="photo-story.css?v=answer-glow-1">
+  <script defer src="assets/gsap.min.js"></script>
+  <script defer src="assets/ScrollTrigger.min.js"></script>
+  <script defer src="app.js?v=connected-2"></script>
+  <script defer src="assets/photo-effects.js"></script>
+</head>
+<body class="photo-story">
+  <a class="skip-link" href="#portraits">Skip to the portraits</a>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"><span></span></div>
+  <div class="reading-progress" aria-hidden="true"><div></div></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Teddy, back to the letter">teddy<span class="brand-heart"><i class="bi bi-heart" aria-hidden="true"></i></span></a>
+    <nav aria-label="Chapters">
+      <a href="#portraits">a little collection</a>
+      <a href="#question">one question <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+    <button class="motion-control" aria-pressed="false" aria-label="Reduce animations" title="Reduce animations"><i class="bi bi-stars" aria-hidden="true"></i><span>motion on</span></button>
+  </header>
+
+  <main>
+    <section class="photo-overture chapter" id="beginning" data-chapter="01" aria-labelledby="opening-title">
+      <div class="opening-portrait" data-portrait="ivory" data-bleed="true"><img class="pre-react-portrait" src="assets/photos/ivory-portrait.webp" alt="Teddy in an ivory outfit, with henna on her hand" fetchpriority="high"></div>
+      <div class="opening-meta"><span>A LITTLE CLOSER, TEDDY.</span><span>01 — 06 / A WORLD OF YOU</span></div>
+      <div class="opening-title"><p class="eyebrow">SOME FEELINGS ARE BETTER SHOWN.</p><h1 id="opening-title"><span class="line"><span>And then,</span></span><span class="line"><span>there’s <em>you.</em></span></span></h1><p>The words were mine.<br>This little part is all you.</p></div>
+      <div class="opening-bottom"><button class="portrait-open text-button" data-open-portrait="ivory" data-cursor="VIEW" aria-label="View the ivory portrait"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i><span>take a closer look</span></button><a class="opening-scroll" href="#portraits"><span>THERE’S MORE TO ADORE</span><i class="bi bi-arrow-down" aria-hidden="true"></i></a><span class="photo-signature">a little collection of you.</span></div>
+    </section>
+
+    <section class="smile-story chapter" id="portraits" data-chapter="02" aria-labelledby="smile-title">
+      <div class="story-rail"><p class="eyebrow">01 / THE PART I COULDN’T FIT INTO A LETTER</p><span>MOVE A LITTLE. FEEL A LITTLE.</span></div>
+      <div class="smile-layout"><div class="smile-copy"><span class="story-index reveal">01.</span><h2 id="smile-title" class="reveal">That little<br><em>smile.</em></h2><p class="reveal">Some things make an ordinary day<br>feel a little less ordinary.</p><span class="handwritten reveal">yes, this one. exactly this one.</span><a class="story-next" href="#a-little-mischief" aria-label="Continue to the crown portraits"><i class="bi bi-arrow-down-right" aria-hidden="true"></i></a></div>
+      <figure class="portrait-figure smile-figure"><button class="photo-motion photo-button" data-open-portrait="smile" data-cursor="FEEL" aria-label="View Teddy’s smile portrait"><span class="portrait-slot" data-portrait="smile"><img class="pre-react-portrait" src="assets/photos/little-smile.webp" alt="Teddy smiling with her finger on her cheek" loading="lazy"></span></button><figcaption><span>THE SMALLEST THINGS STAY THE LONGEST.</span><span>02 / 06</span></figcaption></figure></div>
+    </section>
+
+    <section class="mischief-story" id="a-little-mischief" aria-labelledby="mischief-title">
+      <div class="mischief-heading"><p class="eyebrow reveal">A SOFTER SIDE. A SILLY SIDE.</p><h2 id="mischief-title" class="reveal">A little <em>mischief.</em><br>A lot of <em>you.</em></h2><i class="bi bi-stars" aria-hidden="true"></i></div>
+      <div class="mischief-pair"><figure class="portrait-figure playful-figure"><button class="photo-motion photo-button" data-open-portrait="playful" data-cursor="FEEL" aria-label="View Teddy’s playful crown photo"><span class="portrait-slot" data-portrait="playful"><img class="pre-react-portrait" src="assets/photos/crown-playful.webp" alt="Teddy wearing a gold crown and giving two thumbs up" loading="lazy"></span></button><figcaption><span>A CROWN LOOKS GOOD ON YOU.</span><span>03 / 06</span></figcaption></figure><div class="close-column"><span class="floating-note">a little attitude.<br>a lot of charm.</span><figure class="portrait-figure close-figure"><button class="photo-motion photo-button" data-open-portrait="close" data-cursor="FEEL" aria-label="View Teddy’s close-up crown portrait"><span class="portrait-slot" data-portrait="close"><img class="pre-react-portrait" src="assets/photos/crown-close.webp" alt="A close portrait of Teddy wearing a crown" loading="lazy"></span></button><figcaption><span>THIS VERSION OF YOU, TOO.</span><span>04 / 06</span></figcaption></figure></div></div>
+      <p class="mischief-after reveal">Every little version of you.<br><em>That’s the lovely part.</em></p>
+    </section>
+
+    <section class="garden-story" id="a-little-sunshine" aria-labelledby="garden-title">
+      <div class="garden-heading"><p class="eyebrow reveal">SOME DAYS JUST HAVE YOUR COLOUR.</p><h2 id="garden-title" class="reveal">A little sunshine.<br><em>In lilac.</em></h2><span class="garden-number">05 / 06</span></div>
+      <figure class="portrait-figure garden-figure"><button class="photo-motion photo-button" data-open-portrait="garden" data-cursor="FEEL" aria-label="View Teddy’s lilac garden portrait"><span class="portrait-slot" data-portrait="garden"><img class="pre-react-portrait" src="assets/photos/garden.webp" alt="Teddy wearing lilac among green palms" loading="lazy"></span></button><figcaption><span>A LITTLE BRIGHTER. JUST BY BEING YOU.</span><i class="bi bi-heart" aria-hidden="true"></i></figcaption></figure>
+    </section>
+
+    <section class="last-frame" aria-labelledby="last-frame-title">
+      <figure class="portrait-figure candid-figure"><button class="photo-motion photo-button" data-open-portrait="candid" data-cursor="FEEL" aria-label="View Teddy’s candid crown portrait"><span class="portrait-slot" data-portrait="candid"><img class="pre-react-portrait" src="assets/photos/crown-candid.webp" alt="Teddy standing in a crown and denim outfit" loading="lazy"></span></button><figcaption><span>ONE LAST LITTLE FRAME.</span><span>06 / 06</span></figcaption></figure>
+      <div class="last-copy"><p class="eyebrow reveal">AND AFTER ALL THOSE WORDS…</p><h2 id="last-frame-title" class="reveal">My favourite<br>kind of <em>you?</em></h2><p class="last-answer reveal">Just <em>you.</em></p><p class="last-description reveal">The smile. The silliness.<br>All the little things in between.</p><a href="#question" class="pill dark magnetic" data-cursor="GO"><span>One little question</span><i class="bi bi-arrow-down-right" aria-hidden="true"></i></a></div>
+    </section>
+
+    <section class="question chapter" id="question" data-chapter="03">
+      <div class="question-lights" aria-hidden="true"><span class="question-halo halo-outer"></span><span class="question-halo halo-inner"></span><div class="question-motes"></div></div>
+      <div class="section-top"><p class="eyebrow">02 / ONE LITTLE QUESTION</p><span class="handwritten">a deep breath, and…</span></div>
+      <div class="question-main">
+        <div class="question-heart" aria-hidden="true"><i class="bi bi-heart" aria-hidden="true"></i></div>
+        <span class="question-overline reveal">SO, TEDDY…</span>
+        <h2 class="reveal">What if this is<br><em>our beginning?</em></h2>
+        <p class="question-description reveal">Would you give us a chance?<br>No perfect answer needed. Just what feels right to you.</p>
+        <div class="answer-actions reveal"><button class="answer-choice answer-yes magnetic" id="yes-button" data-cursor="YES"><i class="bi bi-heart" aria-hidden="true"></i><span>Yes, I’d like that</span><i class="bi bi-arrow-up-right answer-arrow" aria-hidden="true"></i></button><button class="answer-choice answer-time" data-response="time" data-cursor="TIME"><i class="bi bi-moon-stars" aria-hidden="true"></i><span>I’d like a little time</span><i class="bi bi-arrow-up-right answer-arrow" aria-hidden="true"></i></button><button class="answer-choice answer-friends" data-response="friends" data-cursor="FRIENDS"><i class="bi bi-heart" aria-hidden="true"></i><span>Let’s stay friends</span><i class="bi bi-arrow-up-right answer-arrow" aria-hidden="true"></i></button></div>
+        <p class="choice-note">Your pace. Your choice. Always.</p>
+      </div>
+      <div class="question-footer"><span>WHATEVER YOU DECIDE, THANK YOU.</span><i class="bi bi-heart" aria-hidden="true"></i><a href="#beginning">back to our little beginning <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>
+    </section>
+
+    <section class="date-section" id="date" hidden aria-labelledby="date-heading">
+      <div class="section-top"><p class="eyebrow">03 / A LITTLE SOMETHING TO LOOK FORWARD TO</p><i class="bi bi-heart" aria-hidden="true"></i></div>
+      <div class="date-layout"><div class="date-copy"><p class="handwritten">well, now I’m smiling.</p><h2 id="date-heading" tabindex="-1">Our first<br><em>little date?</em></h2><p>Nothing fancy. Just a little time together.<br>Pick something that feels like us.</p><div class="activity-options" role="group" aria-label="Choose a date activity"><button data-activity="Coffee" aria-pressed="false"><i class="bi bi-cup-hot" aria-hidden="true"></i>Coffee</button><button data-activity="Ice cream" aria-pressed="false"><i class="bi bi-snow" aria-hidden="true"></i>Ice cream</button><button data-activity="A walk" aria-pressed="false"><i class="bi bi-moon-stars" aria-hidden="true"></i>A walk</button></div><div class="date-preview" aria-live="polite"><span>A LITTLE PLAN FOR TWO</span><p id="plan-summary">Something lovely, whenever you’re ready.</p></div><button class="pill dark" id="date-confirm"><span>Confirm our little plan</span><i class="bi bi-arrow-up-right" aria-hidden="true"></i></button><button class="text-button date-skip" data-response="later">Maybe another day</button><p class="date-feedback" id="date-feedback" role="status">Confirming shares your yes and chosen day with Rizwan. Nothing is booked.</p></div>
+      <div class="calendar"><div class="calendar-top"><i class="bi bi-calendar-heart" aria-hidden="true"></i><span>A DAY FOR US</span></div><div class="calendar-header"><h3 id="calendar-month"></h3><div><button id="month-prev" aria-label="Previous month"><i class="bi bi-arrow-left" aria-hidden="true"></i></button><button id="month-next" aria-label="Next month"><i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></div><div class="weekdays" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div id="calendar-days" class="calendar-days" role="group" aria-label="Choose an upcoming day"></div><div class="selected-day"><i class="bi bi-heart" aria-hidden="true"></i><span id="selected-day" aria-live="polite">Choose a day that feels right</span></div></div></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><a class="brand" href="#beginning">teddy<span class="brand-heart"><i class="bi bi-heart" aria-hidden="true"></i></span></a><span>A LITTLE WORLD. JUST FOR YOU.</span><span>made with a little courage.</span></footer>
+  <div class="chapter-indicator" aria-hidden="true"><span id="chapter-current">01</span><span class="indicator-line"></span><span>03</span></div>
+
+  <dialog id="portrait-dialog" class="portrait-dialog" aria-labelledby="portrait-caption"><button class="dialog-close" data-close aria-label="Close portrait"><i class="bi bi-x-lg" aria-hidden="true"></i></button><div class="expanded-frame" id="expanded-frame"><div id="expanded-portrait"></div></div><p id="portrait-caption"></p><div class="portrait-controls"><button id="portrait-prev" aria-label="Previous portrait"><i class="bi bi-arrow-left" aria-hidden="true"></i></button><span id="portrait-position"></span><button id="portrait-next" aria-label="Next portrait"><i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></dialog>
+  <dialog id="response-dialog" class="response-dialog" aria-labelledby="response-title" aria-describedby="response-message"><button class="dialog-close" data-close aria-label="Close note"><i class="bi bi-x-lg" aria-hidden="true"></i></button><p class="eyebrow">JUST BETWEEN US</p><i class="bi bi-heart response-heart" aria-hidden="true"></i><h2 id="response-title"></h2><p id="response-message"></p><button class="pill light" data-close><span>Keep this little feeling</span><i class="bi bi-heart" aria-hidden="true"></i></button><button class="text-button" id="share-plan" hidden><i class="bi bi-share" aria-hidden="true"></i> Share our little plan</button><p id="share-status" class="choice-note" role="status"></p></dialog>
+  <div class="celebration" aria-hidden="true"></div>
+  <noscript><p class="noscript">The story is here to read. Enable JavaScript for the interactive story and date planner.</p></noscript>
+</body>
+</html>

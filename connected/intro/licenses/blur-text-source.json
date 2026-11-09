@@ -1,0 +1,16 @@
+{
+  "source": "https://reactbits.dev/r/BlurText-TS-TW.json",
+  "retrieved": "2026-11-09",
+  "upstream_source_sha256": "f59bfddeb51cb56df86498a55ae395d3bd4297b1de869310b38b290b9eef7116",
+  "license": "react-bits.txt",
+  "adaptations": [
+    "Scene activation gate",
+    "Reduced-motion static rendering",
+    "Inline semantic paragraph support",
+    "Delay offset and settled-state diagnostics",
+    "Grapheme-safe character segmentation for intact emoji reveals",
+    "Character-level stagger diagnostics",
+    "Avoid blanket per-character GPU layer hints",
+    "Visible-only repeat cycles with a five-second sharp hold, tab-visibility pause and lifecycle cleanup"
+  ]
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+.env
+.env.*
+.vercel/
+*.sqlite3*
+owner-access.txt
+.teddy-private/
+private/
+celebration-preview-test-data.jpg
+test-results/
+playwright-report/
+*.log

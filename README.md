@@ -72,3 +72,8 @@ The panda assets are the supplied 192-frame sequence. A separate 35-second sourc
 SplashCursor comes from the [official React Bits registry](https://reactbits.dev/r/SplashCursor-TS-TW.json). Its GLSL solver is retained; license and provenance are in `licenses/`.
 
 The project uses React, TypeScript, Vite, Tailwind and GSAP ScrollTrigger, with shadcn-compatible `@/` aliases and `src/components/ui` organization. It does not include the separate six-chapter TEDDY HTML.
+
+
+## Connected website preview
+
+The reviewed connected experience is in [connected/](connected/README.md): panda intro, personal letter, six-photo story, answer/date flow, and a local Python backend with protected owner access. The original root app is retained. No hosted deployment or main-branch replacement is implied by this source branch. The private owner celebration template is intentionally distributed separately and is not in this public repository.

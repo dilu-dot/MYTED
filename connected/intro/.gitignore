@@ -1,0 +1,35 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Dependencies, generated builds and caches
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.cache/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.vercel/
+
+# Logs and local overrides
+logs/
+*.log
+*.local
+
+# Editors and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
