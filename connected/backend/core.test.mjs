@@ -68,4 +68,5 @@ test('proxy constrains origin, replaces private headers, and preserves secure co
   assert.match(result.headers.get('set-cookie'), /Secure; HttpOnly/);
   assert.equal(result.headers.getSetCookie().length, 1);
   assert.doesNotMatch(result.headers.get('set-cookie'), /provider-cookie/);
+  assert.equal(result.headers.get('content-type'), 'text/html; charset=utf-8');
 });

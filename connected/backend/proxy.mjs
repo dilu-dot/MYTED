@@ -32,6 +32,9 @@ export function createProxy({ gateway, backendUrl, origins, environment, fetcher
       for (const value of upstream.headers.getSetCookie()) {
         if (/^(?:__Host-)?teddy_(?:owner|visitor)=/.test(value)) responseHeaders.append('Set-Cookie', value);
       }
+      // The Edge platform can normalize HTML responses to text/plain. Only this
+      // authenticated view route renders HTML; API responses retain their type.
+      if (route === 'owner' && upstream.status === 200) responseHeaders.set('Content-Type', 'text/html; charset=utf-8');
       responseHeaders.set('Cache-Control', 'private, no-store');
       return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
     } catch (error) {
