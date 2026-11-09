@@ -2,6 +2,8 @@
   'use strict';
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const siteRoot = new URL('../', document.baseURI);
+  const apiUrl = path => new URL(`api/${path}`, siteRoot);
   const mediaReduce = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
   const motionButton = $('.motion-control');
@@ -263,7 +265,7 @@
   }
   function returnToBeginning() {
     clearInterval(journeyTimer);
-    location.replace('/?journey=beginning');
+    location.replace(new URL('?journey=beginning', siteRoot));
   }
   function beginJourney(activity, date) {
     $('#journey-plan').textContent = `${activity}, together. ${compactDateFormat.format(date)}.`;
@@ -317,11 +319,12 @@
     controls.forEach(([button]) => { button.disabled = true; });
     $('#date-feedback').textContent = 'Saving our little plan…';
     try {
-      const session = await fetch('/api/session');
+      const session = await fetch(apiUrl('session'));
       if (!session.ok) throw new Error('Could not connect. Please try again.');
       const { csrf } = await session.json();
       const day = `${submittedDate.getFullYear()}-${String(submittedDate.getMonth()+1).padStart(2,'0')}-${String(submittedDate.getDate()).padStart(2,'0')}`;
-      const response = await fetch('/api/accept', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }, body: JSON.stringify({ accepted: true, activity: submittedActivity, day }) });
+      const response = await fetch(apiUrl('accept'), { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }, body: JSON.stringify({ accepted: true, activity: submittedActivity, day }) });
+      if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Could not save our little plan right now. Please try again.');
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not save your plan. Please try again.');
     } catch (error) {

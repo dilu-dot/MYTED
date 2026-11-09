@@ -1,0 +1,11 @@
+{
+  "name": "myted-connected-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:frontend": "npm ci --prefix intro",
+    "build": "node scripts/build-frontend.cjs",
+    "preview": "node scripts/preview-frontend.cjs",
+    "check:frontend": "node scripts/check-frontend.cjs"
+  }
+}

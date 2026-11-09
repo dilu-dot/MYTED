@@ -40,7 +40,7 @@ export function ConfessionLetter({ progressRef }: { progressRef: RefObject<numbe
         <BlurText {...shared} as="span" text={AFTER_REVEAL} className="letter-following" delay={16} startDelay={3}/>
       </p>
       {CONFESSION.slice(3).map((text, index) => <BlurText {...shared} key={text} text={text} delay={index === 2 ? 14 : 18} className={`letter-paragraph${index === 2 ? ' letter-closing' : ''}`}/>)}
-      <div className="letter-continuation"><p>The words were only the beginning.</p><a href="/story/">There’s something more <span aria-hidden="true">↗</span></a><small>A little world, just for you.</small></div>
+      <div className="letter-continuation"><p>The words were only the beginning.</p><a href={`${import.meta.env.BASE_URL}story/`}>There’s something more <span aria-hidden="true">↗</span></a><small>A little world, just for you.</small></div>
     </article>
       <div className="letter-endmark" aria-hidden="true"><span/><svg viewBox="0 0 24 24" fill="none"><path d="M12 3c0 5-4 9-9 9 5 0 9 4 9 9 0-5 4-9 9-9-5 0-9-4-9-9Z"/></svg><span/></div>
     </div>

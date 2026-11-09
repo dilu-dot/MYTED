@@ -1,0 +1,30 @@
+name: Connected frontend check
+
+on:
+  push:
+    branches: [codex/teddy-connected]
+    paths: ['connected/**', '.github/workflows/frontend-check.yml']
+  pull_request:
+    paths: ['connected/**', '.github/workflows/frontend-check.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: connected/intro/package-lock.json
+      - name: Install frontend
+        run: npm ci --prefix connected/intro
+      - name: Build complete frontend for GitHub Pages
+        run: npm --prefix connected run build -- --base=/MYTED/
+      - name: Check compiled routes and assets
+        run: npm --prefix connected run check:frontend -- --base=/MYTED/

@@ -1,0 +1,27 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const { root, base, option } = require('./frontend-config.cjs');
+const output = path.join(root, 'dist');
+const port = Number(option('port', '5195'));
+const manifest = JSON.parse(fs.readFileSync(path.join(output, 'frontend-build.json'), 'utf8'));
+if (manifest.base !== base) throw Error(`This build uses ${manifest.base}; preview with the matching --base.`);
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.json': 'application/json' };
+http.createServer((request, response) => {
+  let pathname;
+  try { pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname); }
+  catch { response.writeHead(400).end(); return; }
+  if (!pathname.startsWith(base)) { response.writeHead(404).end(); return; }
+  let relative = pathname.slice(base.length);
+  if (!relative || relative.endsWith('/')) relative += 'index.html';
+  const target = path.resolve(output, relative);
+  const within = path.relative(output, target);
+  if (within.startsWith('..') || path.isAbsolute(within) || relative.split('/').some(part => part.startsWith('.') && part !== '.nojekyll')) {
+    response.writeHead(404).end(); return;
+  }
+  if (request.method !== 'GET' && request.method !== 'HEAD') { response.writeHead(405).end(); return; }
+  if (!fs.existsSync(target) || !fs.statSync(target).isFile()) { response.writeHead(404).end(); return; }
+  response.writeHead(200, { 'Content-Type': mime[path.extname(target)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+  if (request.method === 'HEAD') response.end();
+  else fs.createReadStream(target).pipe(response);
+}).listen(port, '127.0.0.1', () => console.log(`Frontend-only preview: http://127.0.0.1:${port}${base}`));

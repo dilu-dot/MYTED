@@ -66,3 +66,28 @@ Delayed-save browser regression: a forced failure restored activity/calendar but
 ## Cake celebration
 
 After the server confirms a saved date, the visitor sees an illustrated cake-cutting animation, confetti and “Here our journey begins.” A ten-second countdown returns to the first 3D scene at `/?journey=beginning`. “Stay a little longer” pauses both the animation and countdown; the countdown also pauses in hidden tabs. Reduced-motion mode displays the cake without animation. A direct return link and Escape also return to the opening. Failed saves never begin the celebration. The private owner celebration is separate.
+
+## Frontend-only build and GitHub Pages
+
+The complete frontend now has one build entry point. From this connected directory:
+
+```powershell
+npm run install:frontend
+npm run build
+npm run check:frontend
+npm run preview
+```
+
+For the existing GitHub Pages repository path:
+
+```powershell
+npm run build -- --base=/MYTED/
+npm run check:frontend -- --base=/MYTED/
+npm run preview -- --base=/MYTED/ --port=5195
+```
+
+The generated `dist/` includes the compiled panda/letter app, all frames, the complete photo story, fonts, icons and cake animation. It excludes the Python server, owner views and saved responses. `.nojekyll` is generated for static hosting. Letter, home, API and cake-return paths now respect the deployment subdirectory.
+
+A frontend-only static host cannot save a plan or authenticate the owner. Missing services show a recoverable error, without a false success celebration. Connect a hosted backend before sharing the final interactive site with the recipient.
+
+At the check on 9 November 2026, https://dilu-dot.github.io/MYTED/ still served the old main-branch React source (`/src/main.tsx`) and rendered a blank page. The corrected source is on `codex/teddy-connected`; that is separate from publishing it to the live Pages site. The frontend-check workflow builds this branch and validates paths; it does not deploy or change the backend.

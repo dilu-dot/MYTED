@@ -12,3 +12,13 @@ The private celebration design/preview, credentials, data and environment files 
 ## Cake continuation check
 
 JavaScript syntax and backend integration checks passed. An isolated browser confirmation saved Coffee / 12 November 2026, then opened the cake scene. Computed SVG styles confirmed the animated separated slice and knife animation. Desktop and 390px phone layouts had no horizontal overflow. Pause kept the scene open; resume returned automatically to `/?journey=beginning`, with scrollY=0 and scene progress=0.00000. No console errors or warnings were captured. Sample data was isolated from the real owner database.
+
+## Frontend / GitHub Pages check
+
+- Local server was stopped; restarted on 127.0.0.1:5191.
+- Current GitHub Pages site inspected in browser: empty React root; script URL https://dilu-dot.github.io/src/main.tsx. The only existing Pages workflow run was for old main SHA 42407deaadda0e6ef805fb6ca1a41d557fe1a912, not the connected branch.
+- Added a complete frontend build, static preview and deployment-asset validation. Root build and /MYTED/ build both passed, including all 32 static asset/route references and checks excluding owner/server files.
+- Browser tested /MYTED/ intro → letter → photo story. All six modal positions, both respectful alternative answers and missing-date validation worked. 390px layout had no horizontal overflow.
+- Static-only preview: unavailable API produced a recoverable connection message, left controls enabled, and did not show a fake cake success.
+- Isolated subpath fixture: successful sample save displayed the cake, then automatically returned to /MYTED/?journey=beginning with scrollY=0 and scene progress=0.00000. No real response was submitted by this check.
+- Backend source, private credentials, saved answers, main branch and live deployment were not changed.
