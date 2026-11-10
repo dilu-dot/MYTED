@@ -38,12 +38,19 @@ npm run install:frontend
 npm run build
 npm run check:frontend
 npm run test:backend
+npm run test:music
 npm run preview
 ```
 
 For a static `/MYTED/` subdirectory build, add `-- --base=/MYTED/` to build, check:frontend and preview. A static-only host cannot save responses or authenticate the owner. The public GitHub Pages entry redirects to the full hosted site instead.
 
 The Vercel project uses this directory as its root, `npm ci --prefix intro` to install, `npm run build`, and `dist/` for public assets. Only the runtime gateway reads `TEDDY_GATEWAY_SECRET`, `TEDDY_BACKEND_URL` and `TEDDY_SITE_ORIGIN`. Values are managed in Vercel settings and are never prefixed with VITE_. The Edge function and protected settings were provisioned separately in the owner’s Supabase organization.
+
+## Piano background music
+
+The public intro, letter and photo story share a quiet 60-second original piano loop. Music loads on the first tap/click or supported keyboard interaction, fades in at low volume, and has a fixed keyboard-accessible mute control. The mute choice persists locally; the playhead follows the same tab between pages. Hidden tabs pause. Browsers that block resumed audio wait for another tap; full page navigation can cause a brief gap. The private owner page has no background music.
+
+The self-hosted player and MP3 live in `intro/public/music/`. Vite includes them in the public build. `scripts/render-piano.py` is the optional authoring script (requires Python, numpy, scipy and ffmpeg), not a runtime dependency. The arrangement uses Alexander Holm's Salamander Grand Piano samples under CC BY 3.0; `music/credits.html` preserves attribution and lists the processing. No streaming service, tracking or runtime music subscription is used. `npm run test:music` covers activation, blocked autoplay, pending-play mute races, storage restrictions, page position and visibility.
 
 ## Local version
 

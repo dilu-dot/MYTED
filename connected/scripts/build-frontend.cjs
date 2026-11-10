@@ -12,6 +12,8 @@ if (process.platform === 'win32') {
 }
 fs.rmSync(output, { recursive: true, force: true });
 fs.cpSync(path.join(root, 'intro', 'dist'), output, { recursive: true });
+// The shared player also belongs to the loopback server's public directory.
+fs.cpSync(path.join(root, 'intro', 'public', 'music'), path.join(root, 'web', 'music'), { recursive: true });
 fs.cpSync(path.join(root, 'web', 'story'), path.join(output, 'story'), { recursive: true });
 fs.writeFileSync(path.join(output, '.nojekyll'), '');
 fs.writeFileSync(path.join(output, 'frontend-build.json'), JSON.stringify({ base, entry: 'index.html', story: 'story/index.html' }) + '\n');

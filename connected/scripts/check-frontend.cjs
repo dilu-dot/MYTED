@@ -34,7 +34,7 @@ function walk(directory) {
 const manifest = JSON.parse(fs.readFileSync(path.join(output, 'frontend-build.json'), 'utf8'));
 if (manifest.base !== base) failures.push(`Build base is ${manifest.base}, expected ${base}`);
 walk(output);
-for (const file of ['index.html', 'story/index.html', 'story/app.js', 'story/journey.css', '.nojekyll']) {
+for (const file of ['index.html', 'story/index.html', 'story/app.js', 'story/journey.css', 'music/player.js', 'music/player.css', 'music/a-little-beginning.mp3', 'music/credits.html', '.nojekyll']) {
   if (!fs.existsSync(path.join(output, file))) failures.push(`Missing ${file}`);
 }
 for (const file of ['private', 'server.py', 'owner-access.txt', 'teddy.sqlite3']) {

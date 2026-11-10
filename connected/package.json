@@ -7,6 +7,7 @@
     "build": "node scripts/build-frontend.cjs",
     "preview": "node scripts/preview-frontend.cjs",
     "check:frontend": "node scripts/check-frontend.cjs",
+    "test:music": "node --test scripts/music-player.test.cjs",
     "test:backend": "node --test backend/core.test.mjs"
   }
 }
