@@ -20,6 +20,11 @@ function setup({ muted = false, position, blocked = false } = {}) {
     play() { this.attempts++; this.paused = false; return this.playResult(); },
     pause() { this.paused = true; } });
   Object.defineProperty(audio, 'src', { set(v) { audio.attributes.src = v; }, get() { return audio.attributes.src; } });
+  let volume = 1;
+  Object.defineProperty(audio, 'volume', { get() { return volume; }, set(value) {
+    assert.ok(value >= 0 && value <= 1, 'Media volume must stay inside [0, 1]'); volume = value;
+  } });
+  const frames = [];
   const session = new Map(position ? [['teddy:piano:position:v1', JSON.stringify(position)]] : []);
   const local = new Map(muted ? [['teddy:piano:muted:v1', 'true']] : []);
   const storage = map => ({ getItem(k) { if (blocked) throw Error('Storage blocked'); return map.get(k) ?? null; },
@@ -29,9 +34,10 @@ function setup({ muted = false, position, blocked = false } = {}) {
     createElement(tag) { return tag === 'audio' ? audio : control; } });
   const window = element();
   vm.runInNewContext(code, { document, window, sessionStorage: storage(session), localStorage: storage(local),
-    URL, performance: { now: () => 2000 }, requestAnimationFrame: () => 1, cancelAnimationFrame() {} });
+    URL, performance: { now: () => 2000 }, requestAnimationFrame: callback => { frames.push(callback); return frames.length; }, cancelAnimationFrame() {} });
   return { audio, document, window, button, control, session, local,
     tap: () => document.fire('pointerdown', { target: { closest: () => false } }),
+    frame: time => frames.shift()?.(time),
     state: () => control.dataset.state };
 }
 const settle = () => new Promise(resolve => setImmediate(resolve));
@@ -101,4 +107,14 @@ test('private browsing without storage still supports play and mute', async () =
   assert.equal(app.state(), 'playing');
   app.button.fire('click');
   assert.equal(app.state(), 'muted');
+});
+
+test('an early animation-frame timestamp cannot create a negative volume', async () => {
+  const app = setup(); app.tap(); await settle();
+  app.frame(1980);
+  assert.equal(app.audio.volume, 0);
+  app.frame(2750);
+  assert.equal(app.audio.volume, .1);
+  app.frame(4000);
+  assert.equal(app.audio.volume, .2);
 });

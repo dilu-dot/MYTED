@@ -56,8 +56,9 @@
     if (!fade) { audio.volume = value; return; }
     const begin = performance.now();
     const step = now => {
-      const progress = Math.min(1, (now - begin) / 1500);
-      audio.volume = initial + (value - initial) * progress;
+      // A queued frame can carry a timestamp just before performance.now().
+      const progress = Math.max(0, Math.min(1, (now - begin) / 1500));
+      audio.volume = Math.max(0, Math.min(1, initial + (value - initial) * progress));
       if (progress < 1) ramp = requestAnimationFrame(step);
     };
     ramp = requestAnimationFrame(step);
